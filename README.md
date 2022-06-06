@@ -10,3 +10,6 @@
   <li> Check the root directory downloads folder for all outputs! </li>
   
 </ol>
+
+## Authors:
+Long Phanguyen, Johnson Nguyen
