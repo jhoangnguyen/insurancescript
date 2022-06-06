@@ -1,6 +1,6 @@
 # InsuranceScript
 
-## Instructions to run the script
+## Instructions to run the script:
 <ol>
   <li> Go to the Google Form responses and download the results as a .zip file. </li>
   <li> Once downloaded, open the folder with this script, and put the .zip file inside of the "dist" folder. </li>
