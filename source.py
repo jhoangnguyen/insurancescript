@@ -5,22 +5,20 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-from nltk.tokenize import word_tokenize
+
 from webdriver_manager.chrome import ChromeDriverManager
 from pathlib import Path
 import csv
 import os
 import time
-import pandas as pd
-import re
-import sys
+
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 import webbrowser
 
 def crawl(driver):
 
-    # driver = webdriver.Chrome(ChromeDriverManager().install())
+    
     wait = WebDriverWait(driver, 10)
     driver.set_page_load_timeout(10)
 
@@ -414,30 +412,15 @@ def csvOpen():
 
 
 
-
-def test(driver):
-    pd.set_option('display.max_rows', None)
-    pd.set_option('display.max_columns', None)
-    tables = pd.read_html(driver.page_source)
-    print('Tables found:', len(tables))
-    
-    df1 = tables[1]  # Save first table in variable df1\
-    df1 = df1.drop(df1.index[range(6)])
-    df1.to_csv("testoutput.csv", sep='\t')
-
-    print('First Table')
-    print(df1)
-
-
 def main():
     pass
 
 if __name__ == '__main__':
     driver = webdriver.Chrome(ChromeDriverManager().install())
     crawl(driver)
-    # driver.quit()
+    driver.quit()
 
-    # print(scrp)
+    print("done") 
 
     main()
 
