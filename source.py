@@ -4,7 +4,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
+import glob
+import subprocess
 
 from webdriver_manager.chrome import ChromeDriverManager
 from pathlib import Path
@@ -19,13 +23,17 @@ import webbrowser
 def crawl(driver):
 
     
-    wait = WebDriverWait(driver, 10)
     driver.set_page_load_timeout(10)
 
     try:
         driver.get("http://mienthithucvk.mofa.gov.vn/%C4%90%C4%83ngk%C3%BD/Khaitr%E1%BB%B1ctuy%E1%BA%BFn/tabid/104/VE4NCommand/introduction/Default.aspx")
-    except TimeoutError:
-        driver.execute_script("window.stop();")
+    except TimeoutException as ex:
+        driver.refresh()
+
+    # try:
+    #     driver.get("http://mienthithucvk.mofa.gov.vn/%C4%90%C4%83ngk%C3%BD/Khaitr%E1%BB%B1ctuy%E1%BA%BFn/tabid/104/VE4NCommand/introduction/Default.aspx")
+    # except TimeoutError:
+    #     driver.execute_script("window.stop();")
     init = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_btAccept")
     init.click()
 
@@ -285,6 +293,7 @@ def crawl(driver):
     }
 
     for i in range(len(info)):
+
         timeStamp = info[i][0]
         address = info[i][11]
         addressBox = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_txtAddressAtPresent")
@@ -388,30 +397,43 @@ def crawl(driver):
         confirm = driver.find_element(by=By.ID, value="chkConfirm")
         confirm.click()
         submit = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_cmdFinish")
+        time.sleep(20)
         submit.click()
+            
 
-        time.sleep(12)
+        time.sleep(20)
 
         latest_downloaded_file_renamed(lastName, middleName, firstName)
 
-        time.sleep(12)
+        
 
 
+        # try:
+        #     driver.get("http://mienthithucvk.mofa.gov.vn/%C4%90%C4%83ngk%C3%BD/Khaitr%E1%BB%B1ctuy%E1%BA%BFn/tabid/104/VE4NCommand/introduction/Default.aspx")
+        # except TimeoutError:
+        #     driver.execute_script("window.stop();")
         try:
             driver.get("http://mienthithucvk.mofa.gov.vn/%C4%90%C4%83ngk%C3%BD/Khaitr%E1%BB%B1ctuy%E1%BA%BFn/tabid/104/VE4NCommand/introduction/Default.aspx")
-        except TimeoutError:
-            driver.execute_script("window.stop();")
+        except TimeoutException as ex:
+            driver.refresh()
 
         init = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_btAccept")
-        init.click()
+        try:
+            init.click()
+        except TimeoutException:
+            driver.refresh()
+            try:
+                init.click()
+            except TimeoutException:
+                pass
 
 def latest_downloaded_file_renamed(lastName, middleName, firstName):
     path = str(Path.home() / "Downloads")
     os.chdir(path)
     files = sorted(os.listdir(os.getcwd()), key=os.path.getmtime)
     recent = files[-1]
+    time.sleep(1)
     os.rename(path + "\\" + recent, path + "\\" + lastName + middleName + firstName + ".pdf")
-
 
 
 def csvOpen():
@@ -437,7 +459,12 @@ def main():
     pass
 
 if __name__ == '__main__':
-    driver = webdriver.Chrome(ChromeDriverManager().install())
+    chrome_options = Options()
+    chrome_options.add_argument("--dns-prefetch-disable")
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-features=NetworkService")
+
+    driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=chrome_options)
     crawl(driver)
     driver.quit()
 
