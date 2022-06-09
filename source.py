@@ -29,6 +29,9 @@ def crawl(driver):
     init = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_btAccept")
     init.click()
 
+
+    time.sleep(3)
+
     info = csvOpen()
 
     vnContact = "1966 Aborn Road, San Jose, CA, USA"
@@ -283,6 +286,9 @@ def crawl(driver):
 
     for i in range(len(info)):
         timeStamp = info[i][0]
+        address = info[i][11]
+        addressBox = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_txtAddressAtPresent")
+        addressBox.send_keys(address)
         gender = info[i][1]
         firstName = info[i][2]
         middleName = info[i][3]
@@ -300,9 +306,24 @@ def crawl(driver):
         doeDy = parseDOE[2]
         doecomplete = "/" + doeDy + doeMo + doeYr
         birthPlace = info[i][8]
+
+
+        birthPlaceBox = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_txtPlaceOfBirth")
+        birthPlaceBox.send_keys(birthPlace)
+
+
         nationality = info[i][9]
+        dropDownBox = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_ddlNationalityAtPresent")
+        dropButton = Select(dropDownBox)
+        if nationality in allCountries:
+            dropButton.select_by_value(allCountries[nationality])
+
+
+
         occupation = info[i][10]
-        address = info[i][11]
+        # address = info[i][11]
+        # addressBox = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_txtAddressAtPresent")
+        # addressBox.send_keys(address)
         phoneNumber = info[i][12]
 
 
@@ -322,10 +343,8 @@ def crawl(driver):
         mNameBox.send_keys(middleName)
         lNameBox = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_txtLastName")
         lNameBox.send_keys(lastName)
-        dropDownBox = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_ddlNationalityAtBirth")
-        dropButton = Select(dropDownBox)
-        if nationality in allCountries:
-            dropButton.select_by_value(allCountries[nationality])
+        # if nationality in allCountries:
+        #     dropButton.select_by_value(allCountries[nationality])
         passportBox = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_txtPassportNo")
         passportBox.send_keys(passport)
         dobDyBox = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_txtDayOfBirth")
@@ -343,10 +362,7 @@ def crawl(driver):
 
 
 
-        addressBox = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_txtAddressAtPresent")
-        addressBox.send_keys(address)
-        birthPlaceBox = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_txtPlaceOfBirth")
-        birthPlaceBox.send_keys(birthPlace)
+
         currNationalityBox = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_ddlNationalityAtPresent")
         checkBox = Select(currNationalityBox)
         checkBox.select_by_value("USA")
@@ -374,9 +390,12 @@ def crawl(driver):
         submit = driver.find_element(by=By.ID, value="dnn_ctr408_Desktop_subctr_cmdFinish")
         submit.click()
 
-        time.sleep(8)
+        time.sleep(12)
 
         latest_downloaded_file_renamed(lastName, middleName, firstName)
+
+        time.sleep(12)
+
 
         try:
             driver.get("http://mienthithucvk.mofa.gov.vn/%C4%90%C4%83ngk%C3%BD/Khaitr%E1%BB%B1ctuy%E1%BA%BFn/tabid/104/VE4NCommand/introduction/Default.aspx")
@@ -397,7 +416,7 @@ def latest_downloaded_file_renamed(lastName, middleName, firstName):
 
 def csvOpen():
     file = open("Visa Exemption Form.csv")
-    csvRead = csv.reader(file)
+    csvRead = csv.reader(file, delimiter=",", quotechar='"')
 
     header = []
     header = next(csvRead)
@@ -409,6 +428,8 @@ def csvOpen():
     file.close()
 
     return rows
+
+
 
 
 
